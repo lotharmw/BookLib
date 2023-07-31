@@ -1,63 +1,32 @@
-import { useState, useEffect } from "react";
-import { client } from "../client";
-
-function BookList() {
-  const [itemList, setItemList] = useState([]);
-
-  useEffect(() => {
-    const getListItem = async () => {
-      try {
-        const response = await client.getEntries({ content_type: "bookItem" });
-        const responseData = response.items;
-        if (responseData) {
-          // console.log(responseData);
-          setItemList(responseData);
-        } else {
-          setItemList([]);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    getListItem();
-  }, []);
-  // console.log(itemList);
+function BookList(booklib) {
   return (
     <>
-      {itemList.map((item) => {
-        const { sys, fields } = item;
-        const { id } = sys;
-        const bookTitle = fields.title;
-        const bookDescription = fields.description;
-        const bookCover = fields.bookCover.fields.file.url;
-        const author = fields.author;
-        const year = fields.year;
-        const availability = fields.availability;
+      {booklib.map((book) => {
         return (
           <div
-            key={sys}
+            key={book.id}
             className="card lg:card-side lg:w-[50%] lg:mx-auto my-10 bg-base-300 shadow-xl"
           >
             <figure className="lg:w-[125%] max-w-[195px]">
               <img
                 className="max-w-[100%] w-[195px]"
-                src={bookCover}
+                src={book.image_url}
                 alt="Album"
               />
             </figure>
             <div className="card-body">
-              <h2 className="card-title">{bookTitle}</h2>
+              <h2 className="card-title">{book.title}</h2>
               <p>
-                {bookDescription}
+                {book.description}
                 <br />
                 <button className="btn btn-primary mt-4">Weiter lesen</button>
               </p>
               <div className="card-actions justify-end">
-                <div className="badge badge-outline">Author: {author}</div>
-                <div className="badge badge-outline">Year: {year}</div>
+                <div className="badge badge-outline">genre: {book.genre}</div>
+                <div className="badge badge-outline">ISBN: {book.isbn}</div>
                 <div className="badge badge-outline">
                   Available:&nbsp;
-                  {availability ? (
+                  {book.active ? (
                     <span className="text-green-600">Yes</span>
                   ) : (
                     <span className="text-red-600">No</span>
